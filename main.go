@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	format := flag.String("format", "google", "output format: google or mac")
+	format := flag.String("format", "google", "output format: google, mac, or msime")
 	flag.Parse()
 
 	employees, err := converter.ParseCSV(os.Stdin)
@@ -23,8 +23,10 @@ func main() {
 		err = converter.FormatGoogle(os.Stdout, employees)
 	case "mac":
 		err = converter.FormatMac(os.Stdout, employees)
+	case "msime":
+		err = converter.FormatMSIME(os.Stdout, employees)
 	default:
-		fmt.Fprintf(os.Stderr, "Error: unknown format %q (use 'google' or 'mac')\n", *format)
+		fmt.Fprintf(os.Stderr, "Error: unknown format %q (use 'google', 'mac', or 'msime')\n", *format)
 		os.Exit(1)
 	}
 

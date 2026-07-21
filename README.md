@@ -31,7 +31,7 @@ go install github.com/hirosassa/nimoji@latest
 ## 使い方
 
 ```bash
-nimoji -format <google|mac> < employees.csv
+nimoji -format <google|mac|msime> < employees.csv
 ```
 
 ### 入力CSV形式
@@ -100,6 +100,19 @@ nimoji -format mac < employees.csv > dictionary.plist
 「システム設定」→「キーボード」→「ユーザ辞書」にドラッグ&ドロップで読み込めます。
 
 **注意:** macユーザ辞書には辞書を分ける機能がないため、再インポート時に重複登録される可能性があります。更新する場合は、既存の nimoji 由来のエントリを手動で削除してから再度インポートしてください。
+
+#### Microsoft IME ユーザー辞書 (`-format msime`)
+
+Microsoft IME のユーザー辞書ツールが「テキストファイルからの登録」で取り込める
+WORDLIST 形式（UTF-16LE, BOM付き, CRLF改行）で出力されます。
+
+```bash
+nimoji -format msime < employees.csv > dictionary.txt
+```
+
+「ユーザー辞書ツール」→「ツール」→「テキストファイルからの登録」で読み込めます。
+
+**注意:** Microsoft IME 固有の制約に対応するため、`-format google` と異なりコメントの切り詰め・空エントリのスキップ・読みのひらがな変換を行います。
 
 ## ライセンス
 
