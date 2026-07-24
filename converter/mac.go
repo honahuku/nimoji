@@ -14,7 +14,8 @@ type plistDict struct {
 func FormatMac(w io.Writer, employees []Employee) error {
 	var entries []plistDict
 	for _, e := range employees {
-		entries = append(entries,
+		entries = append(
+			entries,
 			plistDict{Phrase: e.LastName + e.FirstName, Shortcut: e.LastNameKana},
 			plistDict{Phrase: e.ID, Shortcut: "ばんごう" + e.LastNameKana},
 			plistDict{Phrase: e.Email, Shortcut: "めーる" + e.LastNameKana},

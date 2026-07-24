@@ -56,19 +56,19 @@ func FormatMSIME(w io.Writer, employees []Employee) error {
 
 func encodeUTF16LE(w io.Writer, s string) error {
 	for _, u := range utf16.Encode([]rune(s)) {
-		if _, err := w.Write([]byte{byte(u), byte(u >> 8)}); err != nil {
+		if _, err := w.Write([]byte{byte(u & 0xff), byte(u >> 8)}); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func truncateRunes(s string, max int) string {
+func truncateRunes(s string, maxLen int) string {
 	runes := []rune(s)
-	if len(runes) <= max {
+	if len(runes) <= maxLen {
 		return s
 	}
-	return string(runes[:max])
+	return string(runes[:maxLen])
 }
 
 // 長音記号「ー」は対応するひらがなが無いためそのまま残す。
