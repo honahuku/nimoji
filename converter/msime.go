@@ -15,31 +15,33 @@ const bom = "\uFEFF"
 // FormatMSIME は MS-IME ユーザー辞書ツールの WORDLIST 形式(UTF-16LE, BOM付き, CRLF)で出力する。
 // エラー対応のためコメントの長さ制限・空単語のスキップ・読みのひらがな変換を行う。
 func FormatMSIME(w io.Writer, employees []Employee) error {
-	var body bytes.Buffer
+	entries := make([]DictionaryEntry, 0, len(employees)*3)
 	for _, e := range employees {
 		fullName := e.LastName + e.FirstName
 		comment := fullName
 		if e.Note != "" {
 			comment = fullName + " / " + e.Note
 		}
-		comment = truncateRunes(comment, commentMaxLength)
+		entries = append(
+			entries,
+			DictionaryEntry{Reading: e.LastNameKana, Word: fullName, PartOfSpeech: "固有名詞", Comment: comment},
+			DictionaryEntry{Reading: "ばんごう" + e.LastNameKana, Word: e.ID, PartOfSpeech: "固有名詞", Comment: comment},
+			DictionaryEntry{Reading: "めーる" + e.LastNameKana, Word: e.Email, PartOfSpeech: "固有名詞", Comment: comment},
+		)
+	}
+	return FormatMSIMEEntries(w, entries)
+}
 
-		entries := []struct {
-			reading string
-			word    string
-		}{
-			{e.LastNameKana, fullName},
-			{"ばんごう" + e.LastNameKana, e.ID},
-			{"めーる" + e.LastNameKana, e.Email},
+func FormatMSIMEEntries(w io.Writer, entries []DictionaryEntry) error {
+	var body bytes.Buffer
+	for _, entry := range entries {
+		if entry.Word == "" {
+			continue
 		}
-		for _, entry := range entries {
-			if entry.word == "" {
-				continue
-			}
-			reading := katakanaToHiragana(entry.reading)
-			if _, err := fmt.Fprintf(&body, "%s\t%s\t固有名詞\t%s\r\n", reading, entry.word, comment); err != nil {
-				return err
-			}
+		comment := truncateRunes(entry.Comment, commentMaxLength)
+		reading := katakanaToHiragana(entry.Reading)
+		if _, err := fmt.Fprintf(&body, "%s\t%s\t%s\t%s\r\n", reading, entry.Word, entry.PartOfSpeech, comment); err != nil {
+			return err
 		}
 	}
 
@@ -71,7 +73,7 @@ func truncateRunes(s string, maxLen int) string {
 	return string(runes[:maxLen])
 }
 
-// 長音記号「ー」は対応するひらがなが無いためそのまま残す。
+// 長音記号「ー」は対応するひらがながないためそのまま残す。
 func katakanaToHiragana(s string) string {
 	runes := []rune(s)
 	for i, r := range runes {
