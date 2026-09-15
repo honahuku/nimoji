@@ -114,17 +114,6 @@ nimoji -format msime < employees.csv > dictionary.txt
 
 **注意:** Microsoft IME 固有の制約に対応するため、`-format google` と異なりコメントの切り詰め・空エントリのスキップ・読みのひらがな変換を行います。
 
-#### Google日本語入力TSVからの変換
-
-Google日本語入力向けのTSVを入力し、MS-IME向けのWORDLIST形式へ変換できます。
-入力は読み・単語・品詞の3列、またはコメントを加えた4列です。
-
-```bash
-nimoji -from google -format msime < nimoji_google.tsv > dictionary.txt
-```
-
-`-from google`は`-format msime`との組み合わせに対応しています。読みはMS-IME向けにひらがなへ変換され、品詞とコメントは入力内容を引き継ぎます。
-
 ## ライセンス
 
 MIT
